@@ -1,166 +1,250 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="./dist/index.js" > </script>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>EmailsEditor wrapper form & usage sample</title>
+
+        <!-- Markdown styles -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css"></link>
+
+        <!-- Optional: Loading HighlightJS just for colors -->
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.5.0/build/styles/default.min.css">
+        <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.5.0/build/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+
+        <!--  Built component from repo -->
+        <script src="https://cdn.jsdelivr.net/gh/eltuza/EmailsEditor/dist/index.js"></script>
+
+        <script>
+            /** Helper for generating random emails */
+            function generateEmail() {
+                const userLength = Math.floor(Math.random() * 7) + 3;
+                const domainLength = Math.floor(Math.random() * 7) + 3;
+
+                const chars = "abcdefghijklmnopqrstuvwxyz12345";
+                const tlds = ['.com', '.edu', '.org', '.net', '.co.uk', '.io', '.nl'];
+                var email = [];
+
+                for (let i = 0; i < userLength; i++) {
+                    const char = chars.charAt(Math.round(chars.length * Math.random()));
+                    email.push(char);
+                }
+
+                email.push('@');
+
+                for (let i = 0; i < domainLength ; i++) {
+                    const char = chars.charAt(Math.round(chars.length * Math.random()));
+                    email.push(char);
+                }
+
+                email.push(tlds[Math.round(tlds.length * Math.random())]);
+
+                return email.join('');
+            }
+        </script>
+
+        <style>
+            /** Markdown container */
+            .markdown-body {
+                box-sizing: border-box;
+                min-width: 200px;
+                max-width: 980px;
+                margin: 0 auto;
+                padding: 45px;
+            }
+
+            @media (max-width: 767px) {
+                .markdown-body {
+                    padding: 15px;
+                }
+            }
+            /** End Markdown container */
+
+            .main {
+                display: flex;
+                flex-direction: column;
+
+                margin: 2em 1em;
+                width: 500px;
+
+                resize: both;
+                overflow: auto;
+
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", sans-serif;
+
+                box-shadow: -1px 10px 23px -6px rgba(0,0,0,0.75);
+                border-radius: 10px;
+            }
+
+            .top {
+                display: flex;
+                flex-direction: column;
+                padding: 2em 2em 1em;
+
+                background: #F8F8F7;
+                color: #0071C2;
+
+                flex: 1;
+            }
+
+            #root {
+                display: flex;
+                justify-self: stretch;
+
+                flex: 1;
+            }
+
+            .bottom {
+                padding: 1em 2em 2em;
+                background: #FFFFFF;
+            }
+
+            h1 {
+                font-size: 20px;
+                font-weight: normal;
+                color: #333;
+            }
+
+            .button-container {
+                display: flex;
+                justify-content: flex-start;
+                margin: 10px 0;
+                gap: 20px;
+
+                flex: 1;
+                width: 100%;
+                border-radius: 8px;
+            }
+
+            /* Normal white Button as seen on Google.com*/
+            .cta {
+                padding: 10px 20px;
+                font-size: 16px;
+                color: white;
+                background: #4C8FFB;
+                border: 1px #3079ED solid;
+                border-radius: 5px;
+                box-shadow: inset 0 1px 0 #80B0FB;
+            }
+
+            .cta:hover {
+                border: 1px #2F5BB7 solid;
+                box-shadow: 0 1px 1px #EAEAEA, inset 0 1px 0 #5A94F1;
+                background: #3F83F1;
+            }
+
+            .cta:active {
+                transform: translateY(1px);
+            }
+        </style>
+    </head>
+
+    <body>
+        <article class="markdown-body">
+            <h1>EmailsComponent</h1>
+            <p>
+                EmailsComponent is a standalone textarea-like component created in Svelte which takes input and renders them as a list of emails, validating wether they are valid or not.
+            </p>
+            <p>
+                It can also take a comma-separated list of emails pasted into the input area.
+            </p>
+
+            <h2>Usage</h2>
+            <p>
+                In order to use the component:
+
+                build it into a self contained module:
+
+                <pre>npm run build</pre>
+
+                then load it on your webpage and instantiate it by providing a target element where the component will be rendered:
+
+                <pre><code class="html">
+&lt;!-- 1. Load the built library --&gt;
+&lt;script src="./dist/index.js"&gt;&lt;/script&gt;
+
+&lt;!-- 2. Create a target DOM node --&gt;
+&lt;div id="root" /&gt;
+                </code></pre>
+
+                <pre><code class="html">
+&lt;!-- 3. Create component instance --&gt;
+&lt;script type="text/javascript"&gt;
+    var root = document.getElementById('root')
+    var emailsEditor = new EmailsEditor({ target: root });
+&lt;/script&gt;
+                </code></pre>
+            </p>
+            <br/>
+
+            <h2>Public methods</h2>
+            <p>
+                The EmailsEditor component has two public methods that can be called to perform external actions.
+
+                <ul>
+                    <li>
+                        <code>addEmail(@String email)</code>: Adds a given 'email' to the editor, which will be validated and displayed accordingly.
+                    </li>
+                    <li>
+                        <code>getEmailCount()</code>: Returns the amount of emails contained in the editor.
+                    </li>
+                </ul>
+            </p>
+            <br/>
+
+
+                <h2>Full example</h2>
+                <p>
+                    Here you can see a full form example:
+                    <ul>
+                        <li>Component is wrapped inside a form component</li>
+                        <li>Two external buttons call the components public methods described above, which allows for business logic implemented by parent components</li>
+                        <li>Our <code>EmailsEditor</code> component adapts to the height & width of the form. Try resizing it!</li>
+                    </ul>
+
+                    <b>Play with it!</b>
+                </p>
+
+            <!-- Form wrapper component that containes the target element for our component (#root) -->
+            <div class="main" resize>
+                <div class="top">
+                    <h1>Share <b>Board name</b> with others!</h1>
+                    <div id="root"></div>
+                </div>
+
+                <div class="bottom">
+                    <div class="button-container">
+                        <button class="cta" id="add-email">Add email</button>
+                        <button class="cta" id="get-count">Get emails count</button>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </body>
 
     <script>
-        function generateEmail() {
-            const userLength = Math.floor(Math.random() * 7) + 3;
-            const domainLength = Math.floor(Math.random() * 7) + 3;
+        // Create an instance of our component and attach it to the DOM.
+        var root = document.getElementById('root')
+        var emailsEditor = new EmailsEditor({ target: root });
 
-            const chars = "abcdefghijklmnopqrstuvwxyz12345";
-            const tlds = ['.com', '.edu', '.org', '.net', '.co.uk', '.io', '.nl'];
+        // Attach handler for "Add email" button
+        document
+            .getElementById('add-email')
+            .addEventListener('click', function(event) {
+                event.preventDefault()
+                var email = generateEmail();
+                emailsEditor.addEmail(email);
+            })
 
-            var email = [];
-
-            for (let i = 0; i < userLength; i++) {
-                const char = chars.charAt(Math.round(chars.length * Math.random()));
-                email.push(char);
-            }
-
-            email.push('@');
-
-            for (let i = 0; i < domainLength; i++) {
-                const char = chars.charAt(Math.round(chars.length * Math.random()));
-                email.push(char);
-            }
-
-            email.push(tlds[Math.round(tlds.length * Math.random())]);
-
-            return email.join('');
-        }
-
-        window.addEventListener('load', (event) => {
-            var root = document.getElementById('root')
-            var emailsEditor = new EmailsEditor({ target: root });
-
-            document
-                .getElementById('add-email')
-                .addEventListener('click', function(event) {
-                    event.preventDefault()
-                    var email = generateEmail();
-                    console.log(email);
-                    emailsEditor.addEmail(email);
-                })
-
-            document
-                .getElementById('get-count')
-                .addEventListener('click', function(event) {
-                    event.preventDefault()
-                    var count = emailsEditor.getEmailCount();
-                    alert("Emails count is " + count);
-                })
-
-            // document
-            //     .getElementById('myform')
-            //     .addEventListener('submit', function(event) {
-            //         console.log("Asasdasd")
-            //         event.preventDefault();
-            //         return false;
-            //     })
-
-        });
+        // Attach handler for "Get emails count" button
+        document
+            .getElementById('get-count')
+            .addEventListener('click', function(event) {
+                event.preventDefault()
+                var count = emailsEditor.getEmailCount();
+                alert("Emails count is " + count);
+            })
     </script>
-
-    <style>
-        .main {
-            display: flex;
-            flex-direction: column;
-
-            margin: 3em;
-            width: 400px;
-
-            resize: both;
-            overflow: auto;
-
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", sans-serif;
-
-            -webkit-box-shadow: -1px 10px 23px -6px rgba(0,0,0,0.75);
-            -moz-box-shadow: -1px 10px 23px -6px rgba(0,0,0,0.75);
-            box-shadow: -1px 10px 23px -6px rgba(0,0,0,0.75);
-            border-radius: 10px;
-        }
-
-        .top {
-            flex: 1;
-            padding: 2em 2em 1em;
-            background: #F8F8F7;
-
-            color: #0071C2;
-
-        }
-
-        #root {
-            border: 1px solid red;
-            height: 100%;
-            flex: 1;
-        }
-
-        .bottom {
-            padding: 1em 2em 2em;
-            background: #FFFFFF;
-        }
-
-        h1 {
-            font-size: 20px;
-            font-weight: normal;
-            color: #333;
-        }
-
-        .button-container {
-            display: flex;
-            justify-content: flex-start;
-            margin: 10px 0;
-            gap: 20px;
-
-            flex: 1;
-            width: 100%;
-            /* border: 1px solid red; */
-            border-radius: 8px;
-        }
-
-        /* Normal white Button as seen on Google.com*/
-        .cta {
-            padding: 10px 20px;
-            font-size: 16px;
-            color: white;
-            background: #4C8FFB;
-            border: 1px #3079ED solid;
-            border-radius: 5px;
-            box-shadow: inset 0 1px 0 #80B0FB;
-        }
-
-        .cta:hover {
-            /* color: #333333; */
-            border: 1px #2F5BB7 solid;
-            box-shadow: 0 1px 1px #EAEAEA, inset 0 1px 0 #5A94F1;
-            background: #3F83F1;
-        }
-
-        .cta:active {
-            /* box-shadow: inset 0 2px 5px #2370FE; */
-            transform: translateY(1px);
-        }
-    </style>
-</head>
-<body>
-    <div class="main" resize>
-        <div class="top">
-            <h1>Share <b>Board name</b> with others!</h1>
-            <div id="root"></div>
-        </div>
-
-        <div class="bottom">
-            <div class="button-container">
-                <button class="cta" id="add-email">Add email</button>
-                <button class="cta" id="get-count">Get emails count</button>
-            </div>
-        </div>
-    </div>
-</body>
 </html>
-
 
